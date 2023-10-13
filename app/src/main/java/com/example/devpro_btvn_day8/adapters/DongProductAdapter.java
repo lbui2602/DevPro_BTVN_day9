@@ -1,4 +1,4 @@
-package com.example.devpro_btvn_day8;
+package com.example.devpro_btvn_day8.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,9 +7,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.devpro_btvn_day8.DongProduct;
+import com.example.devpro_btvn_day8.IClickListener;
+import com.example.devpro_btvn_day8.IClickSave;
+import com.example.devpro_btvn_day8.R;
 
 import java.util.List;
 
@@ -17,9 +21,13 @@ public class DongProductAdapter extends RecyclerView.Adapter<DongProductAdapter.
     private Context context;
     private List<DongProduct> dongProductList;
 
+    IClickListener iClickListener;
+    IClickSave iClickSave;
 
-
-
+    public DongProductAdapter(IClickListener iClickListener,IClickSave iClickSave) {
+        this.iClickListener = iClickListener;
+        this.iClickSave=iClickSave;
+    }
 
     public void setData(List<DongProduct> list){
         this.dongProductList=list;
@@ -43,7 +51,7 @@ public class DongProductAdapter extends RecyclerView.Adapter<DongProductAdapter.
         holder.tvName.setText(dongProduct.getNameTitle());
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false);
 
-        ProductAdapter productAdapter =new ProductAdapter(dongProduct.getListProduct());
+        ProductAdapter productAdapter =new ProductAdapter(dongProduct.getListProduct(),iClickListener,iClickSave);
         holder.rcvProduct.setLayoutManager(linearLayoutManager);
         holder.rcvProduct.setAdapter(productAdapter);
     }

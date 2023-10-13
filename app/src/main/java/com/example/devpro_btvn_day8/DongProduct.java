@@ -1,5 +1,7 @@
 package com.example.devpro_btvn_day8;
 
+import com.example.devpro_btvn_day8.models.Product;
+
 import java.util.List;
 
 public class DongProduct {

@@ -4,13 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.example.devpro_btvn_day8.models.DBHelper;
+import com.example.devpro_btvn_day8.models.Product;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -25,16 +25,17 @@ public class MainActivity extends AppCompatActivity {
     static List<Product> list;
     ProductService productService;
     BottomNavigationView bnvMain;
-    public static NavHostFragment navHostFragment;
-    public static NavController navController;
-
+    NavHostFragment navHostFragment;
+    NavController navController;
+    static DBHelper dbHelper;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        initView();
+        initView();
+        dbHelper=new DBHelper(this);
 //        initData();
     }
 
@@ -60,12 +61,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initView() {
+    public void initView() {
         bnvMain=findViewById(R.id.bnvMain);
-        navHostFragment= (NavHostFragment) getSupportFragmentManager()
+        NavHostFragment navHostFragment= (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-        navController=navHostFragment.getNavController();
+        NavController navController=navHostFragment.getNavController();
         NavigationUI.setupWithNavController(bnvMain,navController);
-
     }
 }

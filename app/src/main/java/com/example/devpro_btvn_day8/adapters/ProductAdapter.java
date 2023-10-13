@@ -1,8 +1,6 @@
-package com.example.devpro_btvn_day8;
+package com.example.devpro_btvn_day8.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +9,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.devpro_btvn_day8.IClickListener;
+import com.example.devpro_btvn_day8.IClickSave;
+import com.example.devpro_btvn_day8.R;
+import com.example.devpro_btvn_day8.models.Product;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
@@ -28,11 +26,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private Context context;
 
 
-    RecyclerView bnvMain;
-
+    private IClickListener iClickListener;
+    private IClickSave iClickSave;
     public ProductAdapter(List<Product> list) {
         this.list = list;
-        ;
+
+    }
+
+    public ProductAdapter(List<Product> list ,IClickListener iClickListener,IClickSave iClickSave) {
+        this.list = list;
+        this.iClickListener=iClickListener;
+        this.iClickSave=iClickSave;
     }
 
     @NonNull
@@ -50,14 +54,21 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.tvPrice.setText("$ "+product.getPrice().toString());
         holder.tvRating.setText(product.getRating().toString());
         Glide.with(context).load(product.getThumbnail()).into(holder.imgAnh);
-
-
         holder.llProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle=new Bundle();
-                bundle.putInt("product_id",product.getId());
-
+                iClickListener.onItemClick(product.getId());
+            }
+        });
+        if(product.getCheck()==1){
+            holder.imgSave.setImageResource(R.drawable.save_true);
+        }else if(product.getCheck()==0){
+            holder.imgSave.setImageResource(R.drawable.save);
+        }
+        holder.imgSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iClickSave.onSaveClick(product);
             }
         });
     }
@@ -70,18 +81,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public class ProductViewHolder extends RecyclerView.ViewHolder {
         BottomNavigationView bnvMain;
         LinearLayout llProduct;
-        ImageView imgAnh;
+        ImageView imgAnh,imgSave;
         TextView tvTittle,tvPrice,tvRating;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            bnvMain=itemView.findViewById(R.id.bnvMain);
             imgAnh=itemView.findViewById(R.id.imgAnh);
             tvTittle=itemView.findViewById(R.id.tvTittle);
             tvPrice=itemView.findViewById(R.id.tvPrice);
             tvRating=itemView.findViewById(R.id.tvRating);
             llProduct=itemView.findViewById(R.id.llProduct);
-
+            imgSave=itemView.findViewById(R.id.imgSave);
         }
 
     }

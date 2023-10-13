@@ -1,5 +1,7 @@
 package com.example.devpro_btvn_day8;
 
+import com.example.devpro_btvn_day8.models.Product;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

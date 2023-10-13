@@ -72,7 +72,7 @@ public class ProductDetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         tvDetails=view.findViewById(R.id.tvDetails);
 
-        String productId=getArguments().getString("product_id",null);
+        String productId=getArguments().getString("product_id","hehe");
         tvDetails.setText(productId);
     }
 }

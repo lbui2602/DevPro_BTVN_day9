@@ -1,11 +1,12 @@
-package com.example.devpro_btvn_day8;
+package com.example.devpro_btvn_day8.uis;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,7 +14,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import com.example.devpro_btvn_day8.DongProduct;
+import com.example.devpro_btvn_day8.adapters.DongProductAdapter;
+import com.example.devpro_btvn_day8.IClickListener;
+import com.example.devpro_btvn_day8.IClickSave;
+import com.example.devpro_btvn_day8.ProductResponse;
+import com.example.devpro_btvn_day8.ProductService;
+import com.example.devpro_btvn_day8.R;
+import com.example.devpro_btvn_day8.RetrofitClient;
+import com.example.devpro_btvn_day8.interfaces.ISaveView;
+import com.example.devpro_btvn_day8.models.DBHelper;
+import com.example.devpro_btvn_day8.models.Product;
+import com.example.devpro_btvn_day8.presenters.SavePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +41,7 @@ import retrofit2.Response;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements IClickListener,IClickSave, ISaveView {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,6 +55,10 @@ public class HomeFragment extends Fragment {
     private RecyclerView rcvHome;
     private DongProductAdapter dongProductAdapter;
     private List<DongProduct> listDongProduct;
+    private SavePresenter savePresenter;
+    List<Product> listAllProduct;
+
+    static DBHelper dbHelper;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -85,11 +102,14 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rcvHome=view.findViewById(R.id.rcvHome);
+
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this.getContext(),RecyclerView.VERTICAL,false);
         rcvHome.setLayoutManager(linearLayoutManager);
-        dongProductAdapter=new DongProductAdapter();
+        dongProductAdapter=new DongProductAdapter(HomeFragment.this,HomeFragment.this);
         rcvHome.setAdapter(dongProductAdapter);
         getData();
+//        getActivity().deleteDatabase("product.db");
+        dbHelper=new DBHelper(getActivity());
     }
 
     private void getData() {
@@ -101,7 +121,8 @@ public class HomeFragment extends Fragment {
                 if(response.isSuccessful()){
                     if(response.code()==200){
                         ProductResponse productResponse=response.body();
-                        List<Product> listAllProduct=productResponse.getProducts();
+                        listAllProduct=productResponse.getProducts();
+                        resetData();
                         List<Product> listProductHotDeal=listAllProduct.stream()
                                 .filter(product -> product.getRating() >4.9)
                                 .collect(Collectors.toList());
@@ -132,19 +153,66 @@ public class HomeFragment extends Fragment {
                         DongProduct dongProduct4=new DongProduct("macs",listProductMac);
                         listDongProduct.add(dongProduct4);
 
-
-
-
                         dongProductAdapter.setData(listDongProduct);
 
                     }
                 }
             }
-
             @Override
             public void onFailure(Call<ProductResponse> call, Throwable t) {
                 Log.d("TAG", "onFailure: ");
             }
         });
+    }
+    public void resetData(){
+        int dem;
+        for(int i=0;i<listAllProduct.size();i++){
+            dem=0;
+            for(int j=0;j<dbHelper.getProducts().size();j++){
+                if(listAllProduct.get(i).getId()==dbHelper.getProducts().get(j).getId()){
+                    listAllProduct.get(i).setCheck(1);
+                    dongProductAdapter.notifyDataSetChanged();
+                    dem=1;
+                }
+            }
+            if(dem==0){
+                listAllProduct.get(i).setCheck(0);
+                dongProductAdapter.notifyDataSetChanged();
+            }
+
+        }
+    }
+
+    @Override
+    public void onItemClick(int productID) {
+        Bundle bundle = new Bundle();
+        bundle.putString("product_id", String.valueOf(productID));
+
+        NavController navController = NavHostFragment.findNavController(HomeFragment.this);
+        navController.navigate(R.id.action_homeFragment_to_productDetailsFragment, bundle);
+    }
+
+
+    @Override
+    public void onSaveClick(Product product) {
+        savePresenter=new SavePresenter(this);
+        savePresenter.clickSave(product);
+    }
+
+    @Override
+    public void onSave(Product product) {
+        dbHelper.addProduct(product);
+        resetData();
+    }
+
+    @Override
+    public void unSave(Product product) {
+        dbHelper.deleteProduct(product.getId());
+        resetData();
+    }
+    public static List<Product> getProductWish(){
+       List<Product> list=new ArrayList<>();
+       list=dbHelper.getProducts();
+       return list;
     }
 }

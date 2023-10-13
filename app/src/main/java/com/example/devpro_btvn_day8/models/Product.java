@@ -1,4 +1,4 @@
-package com.example.devpro_btvn_day8;
+package com.example.devpro_btvn_day8.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -6,6 +6,34 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Product {
+    private int check=0;
+
+    public int getCheck() {
+        return check;
+    }
+
+    public void setCheck(int check) {
+        this.check = check;
+    }
+
+    public Product() {
+    }
+
+    public Product(Integer id, String title, String description, Integer price, Double discountPercentage, Double rating, Integer stock, String brand, String category, String thumbnail, List<String> images) {
+        this.check=0;
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.discountPercentage = discountPercentage;
+        this.rating = rating;
+        this.stock = stock;
+        this.brand = brand;
+        this.category = category;
+        this.thumbnail = thumbnail;
+        this.images = images;
+    }
+
     @SerializedName("id")
     @Expose
     private Integer id;

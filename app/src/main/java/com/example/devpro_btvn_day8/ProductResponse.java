@@ -1,5 +1,6 @@
 package com.example.devpro_btvn_day8;
 
+import com.example.devpro_btvn_day8.models.Product;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
